@@ -1,23 +1,50 @@
-import React from 'react';
-import {Note} from "./Sidebar";
+import React, {useContext, useEffect, useState} from 'react';
+import {Context} from "../index";
+import {Note} from "../types/Note";
+import {init, set} from "../date/indexeddb";
 
-const note: Note =
-    {
-        text: "это текст-\"рыба\", часто используемый в печати и вэб-дизайне. Lorem Ipsum является стандартной \"рыбой\" для текстов на латинице с начала XVI века. В то время некий безымянный печатник создал большую коллекцию размеров и форм шрифтов, используя Lorem Ipsum для распечатки образцов. Lorem Ipsum не только успешно пережил без заметных изменений пять веков, но и перешагнул в электронный дизайн. Его популяризации в новое время послужили публикация листов Letraset с образцами Lorem Ipsum в 60-х годах и, в более недавнее время, программы электронной вёрстки типа Aldus PageMaker, в шаблонах которых используется Lorem Ipsum.",
-        date: new Date(),
-        isLocked: true
-    }
+
 const WorkSpace = () => {
+    const {notes, noteId, setNotes, searchValue, isEdit} = useContext(Context)
+    const [note, setNote] = useState<Note | null>(null)
+    useEffect(() => {
+        note && setNotes(notes.map(n => {
+            if (n.id === noteId) {
+                return note
+            }
+            set("notes", note);
+            return n
+        }))
+    }, [note])
+    useEffect(() => {
+        setNote(notes.find(n => n.id === noteId) || null)
+    }, [noteId, notes])
     return (
-        <div className={"text-space"}>
-            <div>{note.date.toLocaleString(["en-US"], {
+        <div className={"work-space"}>
+            <div>{note?.date.toLocaleString(["en-US"], {
                 month: "long",
-                year:"numeric",
+                year: "numeric",
                 day: "numeric",
                 hour: "2-digit",
                 minute: "numeric"
             })}</div>
-            <textarea>fd</textarea>
+            <>{
+                isEdit
+                    ?
+                    <textarea
+                        defaultValue={""}
+                        value={note?.text || ""}
+                        disabled={!noteId}
+                        onChange={e => setNote({...note, text: e.target.value} as Note)}
+                    />
+                    :
+                    <div className={"textarea"}>
+                        {searchValue ? note?.text.split(searchValue).map((elm, i, arr) => {
+                            return <>{elm}<strong
+                                style={{color: "#ffc816"}}>{arr.length !== i + 1 && searchValue}</strong></>;
+                        }) : note?.text}
+                    </div>
+            }</>
         </div>
     );
 };
