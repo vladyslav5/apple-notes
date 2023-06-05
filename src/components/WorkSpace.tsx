@@ -40,8 +40,8 @@ const WorkSpace = () => {
                     :
                     <div className={"textarea"}>
                         {searchValue ? note?.text.split(searchValue).map((elm, i, arr) => {
-                            return <>{elm}<strong
-                                style={{color: "#ffc816"}}>{arr.length !== i + 1 && searchValue}</strong></>;
+                            return <React.Fragment key={i}>{elm}<strong
+                                style={{color: "#ffc816"}}>{arr.length !== i + 1 && searchValue}</strong></React.Fragment>;
                         }) : note?.text}
                     </div>
             }</>

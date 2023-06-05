@@ -3,6 +3,7 @@ import Button from "./UI/Button";
 import SearchBox from "./SearchBox";
 import {Context} from "../index";
 import DeleteModal from "./Modals/DeleteModal";
+import {del} from "../date/indexeddb";
 
 const HeadMenu = () => {
     const {noteId, setNotes, notes, setNoteId, addHandler, isEdit, setIsEdit} = useContext(Context)
@@ -11,8 +12,8 @@ const HeadMenu = () => {
         const keyDelete = localStorage.getItem("delete");
         keyDelete !== "true" && setVisible(true)
         setNotes(notes.filter(n => n.id !== noteId))
+        noteId && del("notes", noteId)
         setNoteId(null)
-
     }
     return (
         <div className={"head-menu"}>

@@ -55,7 +55,20 @@ export function set(storeName: string, note: Note):Promise<IDBValidKey>{
         }
     })
 }
-
+export function del(storeName: string, noteId: string){
+    return new Promise(async (resolve, reject) => {
+        const db = await init();
+        const transaction = db.transaction(storeName, "readwrite")
+        const store = transaction.objectStore(storeName)
+        const request = store.delete(noteId)
+        request.onerror = (error) => {
+            reject(error)
+        }
+        request.onsuccess = () => {
+            resolve(request.result)
+        }
+    })
+}
 
 export function getAll(storeName: string): Promise<Note[]> {
     return new Promise(async (resolve, reject) => {
